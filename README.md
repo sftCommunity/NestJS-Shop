@@ -4,7 +4,27 @@
 
 # Teslo API
 
-1. start postgres database
+clone the repository
+```bash
+git clone https://github.com/DavidApril/Teslo-Shop.git
+```
+
+install dependencies
+```bash
+npm install
+```
+```bash
+yarn install
+```
+
+clone ```env.example``` to ```.env``` and fill in the required fields
+
+start postgres database
 ```bash
 docker-compose up -d
+```
+
+run development server
+```bash
+npm run start:dev
 ```
