@@ -7,7 +7,8 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileFilter } from './helpers/file-filter.helper';
+import { diskStorage } from 'multer';
+import { fileFilter, fileNamer } from './helpers';
 
 @Controller('files')
 export class FilesController {
@@ -17,6 +18,10 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: fileFilter,
+      storage: diskStorage({
+        destination: './static/products',
+        filename: fileNamer,
+      }),
     }),
   )
   uploadProductImage(@UploadedFile() file: Express.Multer.File) {
