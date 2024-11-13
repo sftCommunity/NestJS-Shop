@@ -18,14 +18,14 @@ export class CreateProductDto {
   @IsOptional()
   price?: number;
   @IsString()
+  @IsOptional()
   description?: string;
-  @IsPositive()
   @IsString()
-  @IsPositive()
+  @IsOptional()
   slug?: string;
   @IsInt()
   @IsPositive()
-  @IsPositive()
+  @IsOptional()
   stock?: number;
   @IsString({ each: true })
   @IsArray()
