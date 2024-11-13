@@ -5,14 +5,17 @@
 # Teslo API
 
 clone the repository
+
 ```bash
 git clone https://github.com/DavidApril/Teslo-Shop.git
 ```
 
 install dependencies
+
 ```bash
 npm install
 ```
+
 ```bash
 yarn install
 ```
@@ -20,11 +23,19 @@ yarn install
 clone ```env.example``` to ```.env``` and fill in the required fields
 
 start postgres database
+
 ```bash
 docker-compose up -d
 ```
 
+execute seed 
+
+```
+localhost:3001/api/seed
+```
+
 run development server
+
 ```bash
 npm run start:dev
 ```
