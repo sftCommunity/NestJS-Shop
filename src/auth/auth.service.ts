@@ -10,12 +10,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, LoginUserDto } from './dto';
 
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -40,13 +43,15 @@ export class AuthService {
       where: { email },
       select: { email: true, password: true },
     });
-
     if (!user) throw new UnauthorizedException('Incorrect email');
-
     if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Incorrect password');
+    return { ...user, token: this.getJwtToken({ email }) };
+  }
 
-    return user;
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
   private handleDatabaseErrors(e: any): never {
