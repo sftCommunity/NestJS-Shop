@@ -2,8 +2,8 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
@@ -33,7 +33,7 @@ export class UserRoleGuard implements CanActivate {
       if (validRoles.includes(role)) return true;
     }
 
-    throw new ForbiddenException(
+    throw new UnauthorizedException(
       `User ${user.fullName} does not have the required roles: [${validRoles}]`,
     );
   }
