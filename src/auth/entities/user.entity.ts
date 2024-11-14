@@ -10,7 +10,7 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, select: false })
   @IsString()
   password: string;
 
