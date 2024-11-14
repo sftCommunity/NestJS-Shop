@@ -8,6 +8,8 @@ import {
 import { MessagesWsService } from './messages-ws.service';
 import { Socket } from 'socket.io';
 import { NewMessageDto } from './dto/new-message.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/auth/interfaces';
 
 @WebSocketGateway({ cors: true })
 export class MessagesWsGateway
@@ -15,16 +17,24 @@ export class MessagesWsGateway
 {
   @WebSocketServer() wss: Socket;
 
-  constructor(private readonly messagesWsService: MessagesWsService) {}
+  constructor(
+    private readonly messagesWsService: MessagesWsService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  handleConnection(client: Socket) {
-    this.messagesWsService.registerClient(client);
+  async handleConnection(client: Socket) {
+    const token = client.handshake.headers.authentication as string;
+    let payload: JwtPayload;
+    try {
+      payload = this.jwtService.verify(token);
+      await this.messagesWsService.registerClient(client, payload.id);
+    } catch (e) {
+      client.disconnect();
+      return;
+    }
+
     this.wss.emit(
       'clients-updated',
-      this.messagesWsService.getConnectedClients(),
-    );
-    console.log(
-      'Connected clients:',
       this.messagesWsService.getConnectedClients(),
     );
   }
@@ -33,10 +43,6 @@ export class MessagesWsGateway
     this.messagesWsService.removeClient(client.id);
     this.wss.emit(
       'clients-updated',
-      this.messagesWsService.getConnectedClients(),
-    );
-    console.log(
-      'Connected clients:',
       this.messagesWsService.getConnectedClients(),
     );
   }
@@ -57,7 +63,7 @@ export class MessagesWsGateway
 
     // This way emit the message to all connected clients including the sender
     this.wss.emit('message-from-server', {
-      fullName: 'Me',
+      fullName: this.messagesWsService.getUserFullName(client.id),
       message: payload.message,
     });
   }
